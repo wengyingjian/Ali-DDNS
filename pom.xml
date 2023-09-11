@@ -19,39 +19,11 @@
         <mainClass>cc.carm.app.aliddns.Main</mainClass>
     </properties>
 
-
-    <name>AliDDNS-Updater</name>
-    <description>阿里云DDNS更新器</description>
-    <url>https://github.com/CarmJos/AliDDNS-Updater</url>
-
     <issueManagement>
         <system>GitHub Issues</system>
         <url>https://github.com/CarmJos/AliDDNS-Updater/issues</url>
     </issueManagement>
 
-    <ciManagement>
-        <system>GitHub Actions</system>
-        <url>https://github.com/CarmJos/AliDDNS-Updater/actions/workflows/maven.yml</url>
-    </ciManagement>
-
-    <developers>
-        <developer>
-            <id>CarmJos</id>
-            <name>Carm Jos</name>
-            <email>carm@carm.cc</email>
-            <url>https://work.carm.cc</url>
-            <roles>
-                <role>Main Developer</role>
-            </roles>
-        </developer>
-    </developers>
-
-    <licenses>
-        <license>
-            <name>GNU General Public License v3.0</name>
-            <url>https://opensource.org/licenses/GPL-3.0</url>
-        </license>
-    </licenses>
 
     <distributionManagement>
         <repository>
