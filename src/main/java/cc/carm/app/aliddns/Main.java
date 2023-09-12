@@ -13,7 +13,7 @@ public class Main {
 
     public static AppConfig config;
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
 
         print("-------------------------------------------");
         print("阿里云服务 DDNS更新器");
@@ -48,7 +48,7 @@ public class Main {
         }
     }
 
-    public static void printWithPrefix( String prefix, String... messages) {
+    public static void printWithPrefix(String prefix, String... messages) {
         if (messages == null || messages.length == 0) {
             System.out.println(" ");
         } else {

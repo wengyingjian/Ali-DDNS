@@ -1,5 +1,6 @@
 package cc.carm.app.aliddns.conf;
 
+
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
@@ -28,6 +29,7 @@ public class AppConfig {
         String accessSecret = System.getenv("accessSecret");
 
         AppConfig appConfig = new AppConfig();
+
         if (StringUtils.isNotBlank(period)) {
             appConfig.setPeriod(Integer.parseInt(period));
         }
