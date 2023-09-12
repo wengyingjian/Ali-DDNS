@@ -1,11 +1,9 @@
 package cc.carm.app.aliddns.model;
 
 import cc.carm.app.aliddns.Main;
-import cc.carm.app.aliddns.conf.AliyunConfig;
 import cc.carm.app.aliddns.conf.AppConfig;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class RequestRegistry {
 
@@ -39,16 +37,14 @@ public class RequestRegistry {
 
     public static RequestRegistry loadFrom(AppConfig appConfig) {
         LinkedHashMap<String, UpdateRequest> data = new LinkedHashMap<>();
-        for (Map.Entry<String, AliyunConfig> aliyunConfig : appConfig.getAliyunConfigMap().entrySet()) {
-            UpdateRequest request = new UpdateRequest(
-                    aliyunConfig.getValue().getAccessKey(),
-                    aliyunConfig.getValue().getAccessSecret(),
-                    aliyunConfig.getValue().getDomain(),
-                    aliyunConfig.getValue().getRecord(),
-                    aliyunConfig.getValue().getProtocol()
-            );
-            data.put(aliyunConfig.getKey(), request);
-        }
+        UpdateRequest request = new UpdateRequest(
+                appConfig.getAccessKey(),
+                appConfig.getAccessSecret(),
+                appConfig.getDomain(),
+                appConfig.getRecord(),
+                appConfig.getProtocol()
+        );
+        data.put(appConfig.getRecord() + "." + appConfig.getDomain(), request);
         return new RequestRegistry(data);
     }
 

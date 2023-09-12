@@ -9,7 +9,6 @@ import com.aliyuncs.alidns.model.v20150109.UpdateDomainRecordRequest;
 import com.aliyuncs.alidns.model.v20150109.UpdateDomainRecordResponse;
 import com.aliyuncs.exceptions.ClientException;
 import com.aliyuncs.profile.DefaultProfile;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -18,9 +17,7 @@ import java.util.Map;
 public class UpdateRequest {
 
 
-    @NotNull
     private final String accessKey;
-    @NotNull
     private final String accessKeySecret;
 
     private final String domain;
@@ -28,7 +25,7 @@ public class UpdateRequest {
 
     private final String protocol;
 
-    public UpdateRequest(@NotNull String accessKey, @NotNull String accessKeySecret, String domain, String record,String protocol) {
+    public UpdateRequest( String accessKey,  String accessKeySecret, String domain, String record,String protocol) {
         this.accessKey = accessKey;
         this.accessKeySecret = accessKeySecret;
         this.domain = domain;
@@ -48,12 +45,10 @@ public class UpdateRequest {
         return data;
     }
 
-    @NotNull
     public String getAccessKey() {
         return accessKey;
     }
 
-    @NotNull
     public String getAccessKeySecret() {
         return accessKeySecret;
     }
