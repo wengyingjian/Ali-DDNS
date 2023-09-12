@@ -1,9 +1,8 @@
 package cc.carm.app.aliddns.model;
 
 import cc.carm.app.aliddns.Main;
-import cc.carm.app.aliddns.manager.RequestManager;
-import cc.carm.lib.configuration.core.source.ConfigurationWrapper;
-import org.jetbrains.annotations.NotNull;
+import cc.carm.app.aliddns.conf.AliyunConfig;
+import cc.carm.app.aliddns.conf.AppConfig;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -13,6 +12,8 @@ public class RequestRegistry {
     protected final LinkedHashMap<String, UpdateRequest> requests;
     protected int updateCount;
     protected boolean hasV6Request;
+
+    private static RequestRegistry registry;
 
     public RequestRegistry(LinkedHashMap<String, UpdateRequest> requests) {
         this.requests = requests;
@@ -36,42 +37,27 @@ public class RequestRegistry {
         return hasV6Request;
     }
 
-    public @NotNull Map<String, Object> serialize() {
-        Map<String, Object> data = new LinkedHashMap<>();
-        listRequests().forEach((k, r) -> data.put(k, r.serialize()));
-        return data;
-    }
-
-    public static RequestRegistry loadFrom(ConfigurationWrapper<?> section) {
+    public static RequestRegistry loadFrom(AppConfig appConfig) {
         LinkedHashMap<String, UpdateRequest> data = new LinkedHashMap<>();
-        if (section == null) return new RequestRegistry(data);
-        for (String taskName : section.getKeys(false)) {
-            ConfigurationWrapper<?> requestSection = section.getConfigurationSection(taskName);
-            if (requestSection == null) continue;
-
+        for (Map.Entry<String, AliyunConfig> aliyunConfig : appConfig.getAliyunConfigMap().entrySet()) {
             UpdateRequest request = new UpdateRequest(
-                    requestSection.getString("access-key", "xx"),
-                    requestSection.getString("access-secret", "xx"),
-                    requestSection.getString("domain", "xx"),
-                    requestSection.getString("record", "xx"),
-                    requestSection.getBoolean("ipv6", false)
+                    aliyunConfig.getValue().getAccessKey(),
+                    aliyunConfig.getValue().getAccessSecret(),
+                    aliyunConfig.getValue().getDomain(),
+                    aliyunConfig.getValue().getRecord(),
+                    aliyunConfig.getValue().getProtocol()
             );
-
-            if (request.isIpv6() && !RequestManager.isIPV6Enabled()) {
-                Main.info("记录 [" + taskName + "] 为IPv6任务，但本实例未启用IPv6，跳过加载。");
-                continue;
-            }
-
-            data.put(taskName, request);
+            data.put(aliyunConfig.getKey(), request);
         }
         return new RequestRegistry(data);
     }
 
-    public static RequestRegistry defaults() {
-        LinkedHashMap<String, UpdateRequest> data = new LinkedHashMap<>();
-        data.put("demo", new UpdateRequest("YOUR-ACCESS-KEY", "YOUR-ACCESS-SECRET", "example.com", "@", false));
-        return new RequestRegistry(data);
-    }
 
+    public static RequestRegistry getInstance() {
+        if (registry == null) {
+            registry = loadFrom(Main.config);
+        }
+        return registry;
+    }
 
 }

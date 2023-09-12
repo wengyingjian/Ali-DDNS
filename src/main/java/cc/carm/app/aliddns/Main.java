@@ -1,11 +1,8 @@
 package cc.carm.app.aliddns;
 
 import cc.carm.app.aliddns.conf.AppConfig;
-import cc.carm.app.aliddns.conf.ServiceConfig;
 import cc.carm.app.aliddns.manager.RequestManager;
 import cc.carm.app.aliddns.utils.TimeDateUtils;
-import cc.carm.lib.configuration.EasyConfiguration;
-import cc.carm.lib.configuration.yaml.YAMLConfigProvider;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -16,6 +13,8 @@ public class Main {
 
     private static RequestManager requestManager;
 
+    public static AppConfig config;
+
     public static void main(String[] args) throws InterruptedException {
 
         print("-------------------------------------------");
@@ -24,22 +23,13 @@ public class Main {
         print("-------------------------------------------");
 
         print("初始化配置文件...");
-        YAMLConfigProvider configuration = EasyConfiguration.from("config.yml");
-        configuration.initialize(AppConfig.class);
+        config = AppConfig.init();
 
         print("初始化记录请求管理器...");
-        requestManager = new RequestManager();
-        int loaded = requestManager.getRequests().size();
-
-        if (loaded < 1) {
-            print("    您没有配置任何记录，请检查配置文件！");
-            System.exit(0);
-        } else {
-            print("    初始化完成，共加载了 " + loaded + " 个任务");
-        }
+        requestManager = new RequestManager(config);
 
         print();
-        print("所有任务已设定为每 " + TimeDateUtils.toDHMSStyle(ServiceConfig.PERIOD.getNotNull()) + " 进行一次更新。");
+        print("所有任务已设定为每 " + TimeDateUtils.toDHMSStyle(config.getPeriod()) + " 进行一次更新。");
         print("-------------------------------------------");
 
         Timer timer = new Timer();
@@ -48,7 +38,7 @@ public class Main {
             public void run() {
                 getRequestManager().doUpdate();
             }
-        }, 500, ServiceConfig.PERIOD.getNotNull() * 1000L);
+        }, 500, config.getPeriod() * 1000L);
 
     }
 
@@ -74,7 +64,9 @@ public class Main {
     }
 
     public static void debug(String... messages) {
-        if (AppConfig.DEBUG.getNotNull()) printWithPrefix("[DEBUG] ", messages);
+        if (config.getDebug()) {
+            printWithPrefix("[DEBUG] ", messages);
+        }
     }
 
     public static void severe(String... messages) {

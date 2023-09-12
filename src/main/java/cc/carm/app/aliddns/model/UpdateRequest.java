@@ -1,7 +1,6 @@
 package cc.carm.app.aliddns.model;
 
 import cc.carm.app.aliddns.Main;
-import cc.carm.app.aliddns.conf.ServiceConfig;
 import com.alibaba.fastjson.JSON;
 import com.aliyuncs.DefaultAcsClient;
 import com.aliyuncs.alidns.model.v20150109.DescribeDomainRecordsRequest;
@@ -27,14 +26,14 @@ public class UpdateRequest {
     private final String domain;
     private final String record;
 
-    private final boolean ipv6;
+    private final String protocol;
 
-    public UpdateRequest(@NotNull String accessKey, @NotNull String accessKeySecret, String domain, String record, boolean ipv6) {
+    public UpdateRequest(@NotNull String accessKey, @NotNull String accessKeySecret, String domain, String record,String protocol) {
         this.accessKey = accessKey;
         this.accessKeySecret = accessKeySecret;
         this.domain = domain;
         this.record = record;
-        this.ipv6 = ipv6;
+        this.protocol = protocol;
     }
 
 
@@ -76,7 +75,7 @@ public class UpdateRequest {
     }
 
     public boolean isIpv6() {
-        return ipv6;
+        return "ipv6".equals(protocol);
     }
 
     public String getRecordType() {
@@ -90,7 +89,7 @@ public class UpdateRequest {
      */
     public void doUpdate(String currentValue) throws ClientException {
 
-        DefaultProfile profile = DefaultProfile.getProfile(ServiceConfig.REGION_ID.getNotNull(), getAccessKey(), getAccessKeySecret());
+        DefaultProfile profile = DefaultProfile.getProfile(Main.config.getRegion(), getAccessKey(), getAccessKeySecret());
         DefaultAcsClient client = new DefaultAcsClient(profile);
 
         DescribeDomainRecordsRequest describeDomainRecordsRequest = new DescribeDomainRecordsRequest();

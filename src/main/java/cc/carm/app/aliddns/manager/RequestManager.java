@@ -2,7 +2,6 @@ package cc.carm.app.aliddns.manager;
 
 import cc.carm.app.aliddns.Main;
 import cc.carm.app.aliddns.conf.AppConfig;
-import cc.carm.app.aliddns.conf.QueryConfig;
 import cc.carm.app.aliddns.model.RequestRegistry;
 import cc.carm.app.aliddns.model.UpdateRequest;
 
@@ -11,7 +10,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,33 +17,31 @@ public class RequestManager {
 
     private final SimpleDateFormat format;
     public final HashMap<String, UpdateRequest> requests;
+    private AppConfig config;
 
-    public RequestManager() {
+    public RequestManager(AppConfig config) {
         this.requests = new HashMap<>();
+        this.config = config;
         this.format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     }
 
     public static boolean isIPV6Enabled() {
-        String v6URL = QueryConfig.V6.get();
-        return v6URL != null && v6URL.length() > 0;
+        return true;
     }
 
     public RequestRegistry getRegistry() {
-        return AppConfig.REQUESTS.getNotNull();
+        return RequestRegistry.getInstance();
     }
 
     public void doUpdate() {
-
-        Main.info("[" + this.format.format(new Date()) + "]" + " 开始执行第" + getRegistry().getUpdateCount() + "次更新...");
-
-        Main.info("从 " + QueryConfig.V4.getNotNull() + " 获取IPv4地址...");
+        Main.info("从 " + config.getIpv4Hosts().get(0) + " 获取IPv4地址...");
         String IPv4 = getCurrentHostIP(false);
         Main.info("     获取完成，当前IPv4地址为 " + IPv4);
 
         String IPv6 = null;
-        if (isIPV6Enabled() && getRegistry().hasV6Request()) {
-            Main.info("从 " + QueryConfig.V6.getNotNull() + " 获取IPv6地址...");
+        if (config.getIpv6Hosts().size() > 0 && getRegistry().hasV6Request()) {
+            Main.info("从 " + config.getIpv6Hosts().get(0) + " 获取IPv6地址...");
             IPv6 = getCurrentHostIP(true);
             Main.info("     获取完成，当前IPv6地址为 " + IPv6);
         }
@@ -74,7 +70,7 @@ public class RequestManager {
 
     public static String getCurrentHostIP(boolean isIPV6) {
         StringBuilder result = new StringBuilder();
-        String requestURL = isIPV6 ? QueryConfig.V6.getNotNull() : QueryConfig.V4.getNotNull();
+        String requestURL = isIPV6 ? Main.config.getIpv6Hosts().get(0) : Main.config.getIpv4Hosts().get(0);
 
         try {
             // 使用HttpURLConnection网络请求第三方接口

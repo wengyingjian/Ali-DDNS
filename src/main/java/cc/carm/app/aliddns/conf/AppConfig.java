@@ -1,37 +1,87 @@
 package cc.carm.app.aliddns.conf;
 
-import cc.carm.app.aliddns.model.RequestRegistry;
-import cc.carm.lib.configuration.core.ConfigurationRoot;
-import cc.carm.lib.configuration.core.annotation.HeaderComment;
-import cc.carm.lib.configuration.core.value.ConfigValue;
-import cc.carm.lib.configuration.core.value.type.ConfiguredSection;
-import cc.carm.lib.configuration.core.value.type.ConfiguredValue;
+import org.yaml.snakeyaml.Yaml;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("unused")
-public class AppConfig extends ConfigurationRoot {
+public class AppConfig {
 
-    public static final double CURRENT_VERSION = 2.0;
+    private boolean debug = false;
+    private int period = 15;
+    private String region = "cn-hangzhou";
+    private List<String> ipv4Hosts;
+    private List<String> ipv6Hosts;
+    private Map<String, AliyunConfig> aliyunConfigMap;
 
-    @HeaderComment("配置文件版本，请不要修改。")
-    public static final ConfigValue<Double> VERSION = ConfiguredValue.of(Double.class, 2.0D);
+    public static AppConfig init() {
+        Yaml yaml = new Yaml();
+        InputStream inputStream = null;
+        try {
+            inputStream = new FileInputStream("/Users/wengyingjian/IdeaProjects/github/Ali-DDNS/src/main/resources/config.yml");
+            return yaml.loadAs(inputStream, AppConfig.class);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 
-    @HeaderComment("是否输出域名记录查询返回信息。(用于调试)")
-    public static final ConfigValue<Boolean> DEBUG = ConfiguredValue.of(Boolean.class, false);
 
-    @HeaderComment("是否检查本程序更新。(默认开启)")
-    public static final ConfigValue<Boolean> CHECK_UPDATE = ConfiguredValue.of(Boolean.class, true);
+    public Boolean getDebug() {
+        return debug;
+    }
 
-    public static final Class<?> SERVICE = ServiceConfig.class;
-    @HeaderComment({"", "本机IP查询接口配置。", "用于获取对应的IP地址，以更新到域名记录。"})
-    public static final Class<?> QUERY = QueryConfig.class;
+    public void setDebug(Boolean debug) {
+        this.debug = debug;
+    }
 
-    @HeaderComment({
-            "", "更新任务配置。",
-            "具体配置请参考 https://github.com/CarmJos/AliDDNS-Updater/blob/master/.doc/REQUEST.md",
-    })
-    public static final ConfigValue<RequestRegistry> REQUESTS = ConfiguredSection.builder(RequestRegistry.class)
-            .parseValue((w, d) -> RequestRegistry.loadFrom(w))
-            .serializeValue(RequestRegistry::serialize)
-            .defaults(RequestRegistry.defaults())
-            .build();
+    public int getPeriod() {
+        return period;
+    }
+
+    public void setPeriod(int period) {
+        this.period = period;
+    }
+
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
+    }
+
+    public List<String> getIpv4Hosts() {
+        return ipv4Hosts;
+    }
+
+    public void setIpv4Hosts(List<String> ipv4Hosts) {
+        this.ipv4Hosts = ipv4Hosts;
+    }
+
+    public List<String> getIpv6Hosts() {
+        return ipv6Hosts;
+    }
+
+    public void setIpv6Hosts(List<String> ipv6Hosts) {
+        this.ipv6Hosts = ipv6Hosts;
+    }
+
+    public Map<String, AliyunConfig> getAliyunConfigMap() {
+        return aliyunConfigMap;
+    }
+
+    public void setAliyunConfigMap(Map<String, AliyunConfig> aliyunConfigMap) {
+        this.aliyunConfigMap = aliyunConfigMap;
+    }
 }
