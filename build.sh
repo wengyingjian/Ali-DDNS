@@ -4,7 +4,10 @@ cp .asset/*.jar docker/app.jar
 
 cd docker
 
-docker build -t ali-ddns .
-docker tag ali-ddns:latest wengyingjian/ali-ddns:latest
-docker push wengyingjian/ali-ddns:latest
+image_name="wengyingjian/ali-ddns:latest"
+
+# 在mac m1平台下构建出x86架构可运行的包
+docker buildx build --platform=linux/amd64 . -t "$image_name"
+
+docker push "$image_name"
 
